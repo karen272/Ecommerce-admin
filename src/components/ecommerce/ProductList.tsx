@@ -16,7 +16,8 @@ const ProductList: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isCreating, setIsCreating] = useState(false);
-    const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null); // 👈 Nuevo estado para toast
+    const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+    const [deleteConfirm, setDeleteConfirm] = useState<{ productId: number | null }>({ productId: null }); // 👈 Reemplaza el modal
 
     const fetchProducts = async () => {
         try {
@@ -35,17 +36,31 @@ const ProductList: React.FC = () => {
         }
     };
 
-    const handleDelete = async (id: number) => {
-        if (!confirm("¿Seguro que deseas eliminar este producto?")) return;
+    const handleDelete = (id: number) => {
+        // Mostrar toast de confirmación
+        setDeleteConfirm({ productId: id });
+    };
+
+    const confirmDelete = async () => {
+        const { productId } = deleteConfirm;
+        if (!productId) return;
 
         try {
-            const { error } = await supabase.from("products").delete().eq("id", id);
+            const { error } = await supabase.from("products").delete().eq("id", productId);
             if (error) throw error;
-            setProducts(products.filter((p) => p.id !== id));
+            setProducts(products.filter((p) => p.id !== productId));
+            setToast({ message: "✅ Producto eliminado", type: "success" });
+            setTimeout(() => setToast(null), 3000);
         } catch (err: any) {
             setToast({ message: `❌ Error al eliminar: ${err.message}`, type: "error" });
             setTimeout(() => setToast(null), 3000);
+        } finally {
+            setDeleteConfirm({ productId: null });
         }
+    };
+
+    const cancelDelete = () => {
+        setDeleteConfirm({ productId: null });
     };
 
     const handleEdit = async (product: Product) => {
@@ -106,16 +121,13 @@ const ProductList: React.FC = () => {
 
             if (error) throw error;
 
-            // ✅ Mostrar toast de éxito
             setToast({ message: "✅ Producto creado exitosamente", type: "success" });
             setTimeout(() => setToast(null), 3000);
 
-            // Resetear
             fetchProducts();
             setIsCreating(false);
             setNewProduct({ name: "", description: "", price: 0, stock: 0, image_url: "" });
         } catch (err: any) {
-            // ❌ Mostrar toast de error
             setToast({ message: `❌ Error al crear producto: ${err.message}`, type: "error" });
             setTimeout(() => setToast(null), 3000);
         }
@@ -135,12 +147,58 @@ const ProductList: React.FC = () => {
 
     return (
         <>
-            {/* 👇 Toast / Alerta */}
+            {/* 👇 Toast de confirmación de eliminación */}
+            {/* 👇 Toast de confirmación de eliminación (centrado, sin fondo oscuro, con estilo) */}
+            {deleteConfirm.productId !== null && (
+                <div className="fixed inset-0 flex items-center justify-center z-[100000] p-4">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-sm w-full border border-gray-200 dark:border-gray-700 overflow-hidden">
+                        <div className="p-6 text-center">
+                            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-6 w-6 text-red-600 dark:text-red-400"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 19c-.77 1.333.192 3 1.732 3z"
+                                    />
+                                </svg>
+                            </div>
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                                ¿Eliminar producto?
+                            </h3>
+                            <p className="text-gray-600 dark:text-gray-400 text-sm">
+                                Esta acción no se puede deshacer. El producto será eliminado permanentemente.
+                            </p>
+                        </div>
+                        <div className="bg-gray-50 dark:bg-gray-700/50 px-6 py-4 flex justify-center gap-3">
+                            <button
+                                onClick={cancelDelete}
+                                className="px-5 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200 border border-gray-300 dark:border-gray-600"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={confirmDelete}
+                                className="px-5 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 rounded-lg transition-colors duration-200 shadow-sm"
+                            >
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* 👇 Toast / Alerta de éxito/error */}
             {toast && (
                 <div
-                    className={`fixed top-4 right-4 z-[100000] p-4 rounded-lg shadow-lg max-w-sm transition-all duration-300 ease-in-out ${toast.type === "success"
-                            ? "bg-green-100 text-green-800 border border-green-200"
-                            : "bg-red-100 text-red-800 border border-red-200"
+                    className={`fixed top-16 right-4 z-[100000] p-4 rounded-lg shadow-lg max-w-sm transition-all duration-300 ease-in-out ${toast.type === "success"
+                        ? "bg-green-100 text-green-800 border border-green-200"
+                        : "bg-red-100 text-red-800 border border-red-200"
                         }`}
                 >
                     <div className="flex items-center gap-2">
@@ -228,10 +286,10 @@ const ProductList: React.FC = () => {
                                             <td className="px-4 py-3 text-gray-800 dark:text-gray-200">${product.price.toFixed(2)}</td>
                                             <td className="px-4 py-3">
                                                 <span className={`px-2 py-1 rounded-full text-xs ${product.stock > 10
-                                                        ? "bg-green-100 text-green-800"
-                                                        : product.stock > 0
-                                                            ? "bg-yellow-100 text-yellow-800"
-                                                            : "bg-red-100 text-red-800"
+                                                    ? "bg-green-100 text-green-800"
+                                                    : product.stock > 0
+                                                        ? "bg-yellow-100 text-yellow-800"
+                                                        : "bg-red-100 text-red-800"
                                                     }`}>
                                                     {product.stock}
                                                 </span>
