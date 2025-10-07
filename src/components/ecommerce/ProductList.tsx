@@ -232,24 +232,36 @@ const ProductList: React.FC = () => {
             )}
 
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <div className="flex items-center gap-4 mb-4">
+                <div className="flex items-center justify-between mb-6">
                     {isCreating || isEditing ? (
-                        <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
-                            {isCreating ? "Crear Producto" : "Editar Producto"}
-                        </h2>
+                        <>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setIsCreating(false);
+                                    setIsEditing(false);
+                                    setNewProduct({ name: "", description: "", price: 0, stock: 0, image_url: "" });
+                                    setEditingProduct(null);
+                                }}
+                                className="px-3 py-1.5 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200 shadow-sm text-sm font-medium flex items-center gap-1"
+                            >
+                                ← Volver
+                            </button>
+                            <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
+                                {isCreating ? "Crear Producto" : "Editar Producto"}
+                            </h2>
+                            <div className="w-16"></div>
+                        </>
                     ) : (
-                        <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
-                            All Products
-                        </h2>
-                    )}
-
-                    {!isCreating && !isEditing && (
-                        <button
-                            onClick={() => setIsCreating(true)}
-                            className="ml-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
-                        >
-                            + Crear Producto
-                        </button>
+                        <>
+                            <h2 className="text-xl font-semibold text-gray-800 dark:text-white">All Products</h2>
+                            <button
+                                onClick={() => setIsCreating(true)}
+                                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
+                            >
+                                + Crear Producto
+                            </button>
+                        </>
                     )}
                 </div>
 
@@ -534,22 +546,10 @@ const ProductList: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className="flex justify-between items-center pt-4">
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setIsCreating(false);
-                                        setIsEditing(false);
-                                        setNewProduct({ name: "", description: "", price: 0, stock: 0, image_url: "" });
-                                        setEditingProduct(null);
-                                    }}
-                                    className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
-                                >
-                                    ← Volver a Productos
-                                </button>
+                            <div className="pt-4 flex justify-end">
                                 <button
                                     type="submit"
-                                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
+                                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium transition"
                                 >
                                     {isCreating ? "Crear Producto" : "Actualizar Producto"}
                                 </button>
