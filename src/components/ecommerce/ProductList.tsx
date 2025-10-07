@@ -200,8 +200,8 @@ const ProductList: React.FC = () => {
             {toast && (
                 <div
                     className={`fixed top-16 right-4 z-[100000] p-4 rounded-lg shadow-lg max-w-sm transition-all duration-300 ease-in-out ${toast.type === "success"
-                            ? "bg-green-100 text-green-800 border border-green-200"
-                            : "bg-red-100 text-red-800 border border-red-200"
+                        ? "bg-green-100 text-green-800 border border-green-200"
+                        : "bg-red-100 text-red-800 border border-red-200"
                         }`}
                 >
                     <div className="flex items-center gap-2">
@@ -286,26 +286,57 @@ const ProductList: React.FC = () => {
                                             <td className="px-4 py-3 text-gray-800 dark:text-gray-200">${product.price.toFixed(2)}</td>
                                             <td className="px-4 py-3">
                                                 <span className={`px-2 py-1 rounded-full text-xs ${product.stock > 10
-                                                        ? "bg-green-100 text-green-800"
-                                                        : product.stock > 0
-                                                            ? "bg-yellow-100 text-yellow-800"
-                                                            : "bg-red-100 text-red-800"
+                                                    ? "bg-green-100 text-green-800"
+                                                    : product.stock > 0
+                                                        ? "bg-yellow-100 text-yellow-800"
+                                                        : "bg-red-100 text-red-800"
                                                     }`}>
                                                     {product.stock}
                                                 </span>
                                             </td>
-                                            <td className="px-4 py-3 space-x-2">
+                                            <td className="px-4 py-3 flex gap-3">
+                                                {/* Botón Editar (icono amarillo) */}
                                                 <button
                                                     onClick={() => handleEdit(product)}
-                                                    className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium"
+                                                    className="text-yellow-500 hover:text-yellow-700 dark:text-yellow-400 dark:hover:text-yellow-300 transition-colors"
+                                                    title="Editar"
                                                 >
-                                                    Editar
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        className="h-5 w-5"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        stroke="currentColor"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth={2}
+                                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                                        />
+                                                    </svg>
                                                 </button>
+
+                                                {/* Botón Eliminar (icono rojo) */}
                                                 <button
                                                     onClick={() => handleDelete(product.id)}
-                                                    className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 text-sm font-medium"
+                                                    className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+                                                    title="Eliminar"
                                                 >
-                                                    Eliminar
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        className="h-5 w-5"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        stroke="currentColor"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth={2}
+                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                                        />
+                                                    </svg>
                                                 </button>
                                             </td>
                                         </tr>
